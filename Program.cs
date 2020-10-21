@@ -74,10 +74,9 @@ namespace PFind {
 					}
 					hitCount++;
 					List<string> tmpPatterns = new List<string>( patterns );
-
+					bool printLine = true;
 					do {
 						string pattern = line.PopFirstHit( tmpPatterns, StringComparison.InvariantCultureIgnoreCase );
-						tmpPatterns.Remove( pattern );
 						int hitIndex = line.IndexOf( pattern, StringComparison.InvariantCultureIgnoreCase );
 						if( printName ) {
 							ConsoleColor cc = Console.ForegroundColor;
@@ -91,7 +90,11 @@ namespace PFind {
 						string linePattern = line.Substring( hitIndex, pattern.Length );
 						string after = line.Substring( hitIndex + pattern.Length );
 						ConsoleColor fg = Console.ForegroundColor;
-						Console.Write( "Line " + (i + 1) + ": " + before );
+						if( printLine ) {
+							Console.Write( $"Line {(i + 1)}: " );
+							printLine = false;
+						}
+						Console.Write( before );
 						Console.ForegroundColor = ConsoleColor.Yellow;
 						Console.Write( linePattern );
 						Console.ForegroundColor = fg;
