@@ -97,6 +97,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetDir)PFind.* "C:\Program Files (x86)\Diverse"</PostBuildEvent>
+    <PostBuildEvent>@rem copy $(TargetDir)PFind.* "C:\Program Files (x86)\Diverse"</PostBuildEvent>
   </PropertyGroup>
 </Project>
