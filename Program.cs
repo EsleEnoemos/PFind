@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using static System.Net.WebRequestMethods;
 
 namespace PFind {
 	class Program {
@@ -63,7 +62,7 @@ namespace PFind {
 			int hitCount = 0;
 			int fileCount = 0;
 			foreach( string s in files ) {
-				string[] lines = System.IO.File.ReadAllLines( s );
+				string[] lines = File.ReadAllLines( s );
 				bool printName = true;
 				for( int i = 0; i < lines.Length; i++ ) {
 					string line = lines[ i ];
