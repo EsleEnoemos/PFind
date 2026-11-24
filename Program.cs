@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using static System.Net.WebRequestMethods;
 
 namespace PFind {
 	class Program {
@@ -52,7 +53,8 @@ namespace PFind {
 				}
 				Console.WriteLine( $" using filter \"{filter}\"" );
 			}
-			string[] files = Directory.GetFiles( Environment.CurrentDirectory, filter, recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly );
+			//string[] files = Directory.GetFiles( Environment.CurrentDirectory, filter, recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly );
+			string[] files = GetFiles( filter, recursive );
 			if( files.Length == 0 ) {
 				Console.WriteLine( $"No files was found with file filter \"{filter}\"" );
 				return;
@@ -61,7 +63,7 @@ namespace PFind {
 			int hitCount = 0;
 			int fileCount = 0;
 			foreach( string s in files ) {
-				string[] lines = File.ReadAllLines( s );
+				string[] lines = System.IO.File.ReadAllLines( s );
 				bool printName = true;
 				for( int i = 0; i < lines.Length; i++ ) {
 					string line = lines[ i ];
@@ -111,6 +113,30 @@ namespace PFind {
 				}
 			}
 			Console.WriteLine( "Found " + hitCount + " hits in " + fileCount + " files, searching a total of " + files.Length + " files" );
+		}
+
+		private static string[] GetFiles( string filter, bool recursive ) {
+			try {
+				return Directory.GetFiles( Environment.CurrentDirectory, filter, recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly );
+			} catch { }
+
+			List<string> files = new List<string>();
+			DirectoryInfo cd = new DirectoryInfo( Environment.CurrentDirectory );
+			DirectoryInfo[] dirs = cd.GetDirectories();
+			foreach( DirectoryInfo dir in dirs ) {
+				try {
+					FileInfo[] dirFiles = dir.GetFiles( filter, recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly );
+					foreach( FileInfo df in dirFiles ) {
+						files.Add( df.FullName );
+					}
+				} catch( Exception ex ) {
+					ConsoleColor foregroundColor = Console.ForegroundColor;
+					Console.ForegroundColor = ConsoleColor.Red;
+					Console.WriteLine( $"Unable to search in '{dir.FullName}': {ex.Message}" );
+					Console.ForegroundColor = foregroundColor;
+				}
+			}
+			return files.ToArray();
 		}
 		private static void ShowUsage() {
 			Program p = new Program();
